@@ -1,31 +1,10 @@
-provider "aws" {
-  region  = "us-east-1"
-}
-
-# Declare the data source --> aws_availability_zones.available.names --> list 
-data "aws_availability_zones" "available" {
-  state = "available"
-}
-
-variable "vpc_cidr_block" {
-  type        = string
-  description = "vpc cidr block"
-  default     = "10.1.0.0/16"
-}
-
-variable "instance_tenancy_type" {
-  type        = string
-  description = "instance_tenancy_type"
-  default     = "default"
-}
-
 # VPC
 resource "aws_vpc" "main" {
   cidr_block       = var.vpc_cidr_block
   instance_tenancy = var.instance_tenancy_type
 
   tags = {
-    "Name" = "capstone_vpc"
+    "Name" = "${var.project}_vpc"
   }
 }
 
@@ -34,7 +13,7 @@ resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "capstone_igw"
+    Name = "${var.project}_igw"
   }
 }
 
@@ -45,7 +24,7 @@ resource "aws_subnet" "public_subnet_1" {
   availability_zone = data.aws_availability_zones.available.names[0]
 
   tags = {
-    Name = "capstone_public_subnet_1"
+    Name = "${var.project}_public_subnet_1"
   }
 }
 
@@ -56,7 +35,7 @@ resource "aws_subnet" "public_subnet_2" {
   availability_zone = data.aws_availability_zones.available.names[1]
 
   tags = {
-    Name = "capstone_public_subnet_2"
+    Name = "${var.project}_public_subnet_2"
   }
 }
 
@@ -67,7 +46,7 @@ resource "aws_subnet" "private_subnet_1" {
   availability_zone = data.aws_availability_zones.available.names[0]
 
   tags = {
-    Name = "capstone_private_subnet_1"
+    Name = "${var.project}_private_subnet_1"
   }
 }
 
@@ -78,7 +57,7 @@ resource "aws_subnet" "private_subnet_2" {
   availability_zone = data.aws_availability_zones.available.names[1]
 
   tags = {
-    Name = "capstone_private_subnet_2"
+    Name = "${var.project}_private_subnet_2"
   }
 }
 
@@ -92,7 +71,7 @@ resource "aws_route_table" "public_rt" {
   }
 
   tags = {
-    Name = "capstone_public_rt"
+    Name = "${var.project}_public_rt"
   }
 }
 
@@ -108,35 +87,35 @@ resource "aws_route_table_association" "public_rt_assoc_2" {
   route_table_id = aws_route_table.public_rt.id
 }
 
-# Nat Gateway
-resource "aws_nat_gateway" "nat-gateway" {
-  allocation_id = aws_eip.eip.id
-  connectivity_type = "public"
-  subnet_id         = aws_subnet.public_subnet_1.id
-  tags = {
-    Name = "capstone_nat"
-  }
-}
+// # Nat Gateway
+// resource "aws_nat_gateway" "nat_gateway" {
+//   allocation_id = aws_eip.eip.id
+//   connectivity_type = "public"
+//   subnet_id         = aws_subnet.public_subnet_1.id
+//   tags = {
+//     Name = "${var.project}_nat"
+//   }
+// }
 
-# Elastic IP
-resource "aws_eip" "eip" {
-  vpc = true
-  tags = {
-    Name = "capstone_eip"
-  }
-}
+// # Elastic IP
+// resource "aws_eip" "eip" {
+//   vpc = true
+//   tags = {
+//     Name = "${var.project}_eip"
+//   }
+// }
 
 # Private Route Table 
 resource "aws_route_table" "private_rt" {
   vpc_id = aws_vpc.main.id
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_nat_gateway.nat-gateway.id
-  }
+  // route {
+  //   cidr_block = "0.0.0.0/0"
+  //   gateway_id = aws_nat_gateway.nat_gateway.id
+  // }
 
   tags = {
-    Name = "capstone_private_rt"
+    Name = "${var.project}_private_rt"
   }
 }
 
