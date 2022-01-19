@@ -23,3 +23,22 @@ variable "db_password" {
     description = "db password"
     default = "admin-123"
 }
+
+
+variable "ec2_ami_id"{
+    type = string
+    description = "Redhat AMI Id for Wordpress EC2 Server"
+    default = "ami-0b0af3577fe5e3532"
+}
+
+variable "instance_type" {
+  type = string
+  description = "ec2 instance type"
+  default = "t2.micro"
+}
+
+variable "ssh_public_key" {
+    type = string
+    description = "SSH RSA Public Key"
+    default = "./pem/public_key.pub"
+}
